@@ -3,6 +3,7 @@ const fs = require('fs');
 const solc = require('solc');
 const Web3 = require('web3');
 
+//const web3 = new Web3(new Web3.providers.HttpProvider("http://18.220.84.55:8545"));
 const web3 = new Web3(new Web3.providers.HttpProvider("http://localhost:8545"));
 
 const COMPANY_ADDRESS = web3.eth.accounts[0];
