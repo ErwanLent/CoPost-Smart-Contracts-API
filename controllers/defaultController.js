@@ -218,35 +218,22 @@ exports.finalizeDelivery = function(req, res) {
         return;  
     }        
 
-    AllContracts[package_hash].finalizeDelivery(package_hash, recipient_phone, (error, response) => {
-        if (error) {
-            console.log(error);   
+    AllContracts[package_hash].finalizeDelivery(package_hash, recipient_phone, (err, finalizeResponse) => {
+        if (err) {
+            console.log(err);   
 
             res.json({
                 status: 'error',
-                response: error
+                response: err
             });   
 
             return;
         }
 
-        AllContracts[package_hash].isPackageFinalized((error, response) => {
-            if (error) {
-                console.log(error);   
-
-                res.json({
-                    status: 'error',
-                    response: error
-                });   
-
-                return;
-            }
-        
-            res.json({
-                status: 'success',
-                is_finalized: response
-            });  
-        });      
+        res.json({
+            status: 'success',
+            is_finalized: finalizeResponse
+        });    
     });
 };
 

@@ -51,6 +51,10 @@ contract Delivery {
     }
 
 	function finalizeDelivery(string _package_hash, string _recipient_phone) constant returns (bool) {
+		if (package_delivered) {
+			return true;
+		}
+
 		if (sha3(_package_hash) == sha3(package_hash) && sha3(_recipient_phone) == sha3(recipient_phone)) {
 			package_delivered = true;
 			return true;
