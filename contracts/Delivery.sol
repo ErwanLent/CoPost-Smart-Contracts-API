@@ -34,6 +34,11 @@ contract Delivery {
 	}
 
 	function payForPackage() payable returns (bool) {
+		if (package_paid_for) {
+			msg.sender.send(msg.value);
+			return true;
+		}
+
 		shipper_address = msg.sender;
 
         if (msg.value == amount_to_pay) {

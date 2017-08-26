@@ -58,7 +58,7 @@ exports.makePackageContract = function(req, res) {
         return;        
     }
 
-    if (AllContracts.package_hash) {
+    if (AllContracts[package_hash]) {
         res.json({
             status: 'error',
             response: 'contract already made for this package'
@@ -88,7 +88,7 @@ exports.makePackageContract = function(req, res) {
             console.log('Contract address: ' + contractResponse.address);
             let diceRollerContract = contract.at(contractResponse.address);
 
-            AllContracts.package_hash = diceRollerContract;
+            AllContracts[package_hash] = diceRollerContract;
 
             res.json({
                 status: 'success',
@@ -113,7 +113,7 @@ exports.payForPackage = function(req, res) {
         return;               
     }
 
-    if (!AllContracts.package_hash) {
+    if (!AllContracts[package_hash]) {
         res.json({
             status: 'error',
             response: 'No contract package hash found'
@@ -122,7 +122,7 @@ exports.payForPackage = function(req, res) {
         return;  
     }    
 
-    AllContracts.package_hash.payForPackage.sendTransaction({
+    AllContracts[package_hash].payForPackage.sendTransaction({
         from: SHIPPER_ADDRESS,
         value: amount_to_pay_in_wei,
         gas: 600000,
@@ -165,7 +165,7 @@ exports.updateCarrierInformation = function(req, res) {
         carrier_address = CARRIER_ADDRESS;
     }
 
-    if (!AllContracts.package_hash) {
+    if (!AllContracts[package_hash]) {
         res.json({
             status: 'error',
             response: 'No contract package hash found'
@@ -174,7 +174,7 @@ exports.updateCarrierInformation = function(req, res) {
         return;  
     }    
 
-    AllContracts.package_hash.updateCarrierInformation(carrier_address, carrier_phone, (error, response) => {
+    AllContracts[package_hash].updateCarrierInformation(carrier_address, carrier_phone, (error, response) => {
         if (error) {
             console.log(error);   
 
@@ -209,7 +209,7 @@ exports.finalizeDelivery = function(req, res) {
         return;               
     }
 
-    if (!AllContracts.package_hash) {
+    if (!AllContracts[package_hash]) {
         res.json({
             status: 'error',
             response: 'No contract package hash found'
@@ -218,7 +218,7 @@ exports.finalizeDelivery = function(req, res) {
         return;  
     }        
 
-    AllContracts.package_hash.finalizeDelivery(package_hash, recipient_phone, (error, response) => {
+    AllContracts[package_hash].finalizeDelivery(package_hash, recipient_phone, (error, response) => {
         if (error) {
             console.log(error);   
 
@@ -230,7 +230,7 @@ exports.finalizeDelivery = function(req, res) {
             return;
         }
 
-        AllContracts.package_hash.isPackageFinalized((error, response) => {
+        AllContracts[package_hash].isPackageFinalized((error, response) => {
             if (error) {
                 console.log(error);   
 
