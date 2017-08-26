@@ -46,10 +46,10 @@ exports.makePackageContract = function(req, res) {
         package_hash,
         shipper_phone,
         recipient_phone,
-        amount_to_pay_in_ether
+        amount_to_pay_in_wei
     } = req.body;
 
-    if (!package_hash || !shipper_phone || !recipient_phone || !amount_to_pay_in_ether) {
+    if (!package_hash || !shipper_phone || !recipient_phone || !amount_to_pay_in_wei) {
         res.json({
             status: 'error',
             response: 'missing fields'
@@ -67,7 +67,7 @@ exports.makePackageContract = function(req, res) {
         return;  
     }
 
-    const contractInstance = contract.new(shipper_phone, recipient_phone, package_hash, web3.toWei(amount_to_pay_in_ether, 'ether'), {
+    const contractInstance = contract.new(shipper_phone, recipient_phone, package_hash, amount_to_pay_in_wei, {
         data: '0x' + bytecode,
         from: COMPANY_ADDRESS,
         gas: 1500000
@@ -101,10 +101,10 @@ exports.makePackageContract = function(req, res) {
 exports.payForPackage = function(req, res) {
     const {
         package_hash,
-        amount_to_pay_in_ether
+        amount_to_pay_in_wei
     } = req.body;
 
-    if (!package_hash || !amount_to_pay_in_ether) {
+    if (!package_hash || !amount_to_pay_in_wei) {
         res.json({
             status: 'error',
             response: 'missing fields'
@@ -124,7 +124,7 @@ exports.payForPackage = function(req, res) {
 
     AllContracts.package_hash.payForPackage.sendTransaction({
         from: SHIPPER_ADDRESS,
-        value: web3.toWei(amount_to_pay_in_ether, 'ether'),
+        value: amount_to_pay_in_wei,
         gas: 600000,
     }, function(err, data) {
         if (err) {
