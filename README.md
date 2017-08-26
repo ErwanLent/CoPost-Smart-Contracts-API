@@ -14,6 +14,10 @@ Required params:
 - recipient_phone
 - amount_to_pay_in_ether
 
+
+----------
+
+
 **POST**
 */api/payForPackage*
 
@@ -21,6 +25,8 @@ Required params:
 
 - package_hash
 - amount_to_pay_in_ether
+
+----------
 
 **POST**
 */api/updateCarrierInformation*
@@ -35,6 +41,8 @@ Optional params:
 - carrier_address
 
 The *carrier_address* is a ethereum address.
+
+----------
 
 **POST**
 */api/finalizeDelivery*
