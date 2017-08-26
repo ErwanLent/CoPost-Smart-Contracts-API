@@ -98,19 +98,49 @@ exports.makePackageContract = function(req, res) {
 };
 
 exports.payForPackage = function(req, res) {
-//     diceRollerContract.payForPackage.sendTransaction({
-//         from: SHIPPER_ADDRESS,
-//         value: web3.toWei(5, 'ether'),
-//         gas: 600000,
-//     }, function(err, data) {
-//         callback({
-//             reponse: (err || data) + ''
-//         });
-//     });
+    const {
+        package_hash,
+        amount_to_pay_in_ether
+    } = req.body;
 
-    res.json({
-        status: 'success',
-        response: 'yolo'
+    if (!package_hash || !amount_to_pay_in_ether) {
+        res.json({
+            status: 'error',
+            response: 'missing fields'
+        });   
+
+        return;               
+    }
+
+    if (!AllContracts.package_hash) {
+        res.json({
+            status: 'error',
+            response: 'No contract package hash found'
+        });   
+
+        return;  
+    }    
+
+    AllContracts.package_hash.payForPackage.sendTransaction({
+        from: SHIPPER_ADDRESS,
+        value: web3.toWei(amount_to_pay_in_ether, 'ether'),
+        gas: 600000,
+    }, function(err, data) {
+        if (err) {
+            console.log(err);   
+
+            res.json({
+                status: 'error',
+                response: err
+            });   
+
+            return;
+        }
+
+        res.json({
+            status: 'success',
+            transaction: data
+        });
     });
 };
 
@@ -133,8 +163,13 @@ exports.finalizeDelivery = function(req, res) {
     });
 };
 
+exports.checkBalance = function(req, res) {
+    checkAllBalances();
 
-
+    res.json({
+        reponse: 'Checking balances'
+    });  
+};
 
 // exports.sendMoney = function(req, res) {
 //     sendMoney((response) => {
@@ -146,14 +181,6 @@ exports.finalizeDelivery = function(req, res) {
 //     getData((response) => {
 //         res.json(response);    
 //     });
-// };
-
-// exports.checkBalance = function(req, res) {
-//     checkAllBalances();
-
-//     res.json({
-//         reponse: 'Checking balances'
-//     });  
 // };
 
 // function getData(callback) {
