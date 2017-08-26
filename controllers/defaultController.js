@@ -69,7 +69,7 @@ exports.makePackageContract = function(req, res) {
     const contractInstance = contract.new(shipper_phone, recipient_phone, package_hash, web3.toWei(amount_to_pay_in_ether, 'ether'), {
         data: '0x' + bytecode,
         from: COMPANY_ADDRESS,
-        gas: 800000
+        gas: 1500000
     }, (err, contractResponse) => {
         if (err) {
             console.log(err);   
@@ -142,6 +142,55 @@ exports.payForPackage = function(req, res) {
             transaction: data
         });
     });
+};
+
+exports.updateCarrierInformation = function(req, res) {
+    let {
+        package_hash,
+        carrier_phone,
+        carrier_address
+    } = req.body;
+
+    if (!package_hash || !carrier_phone) {
+        res.json({
+            status: 'error',
+            response: 'missing fields'
+        });   
+
+        return;               
+    }
+
+    if (!carrier_address) {
+        carrier_address = CARRIER_ADDRESS;
+    }
+
+    if (!AllContracts.package_hash) {
+        res.json({
+            status: 'error',
+            response: 'No contract package hash found'
+        });   
+
+        return;  
+    }    
+
+    AllContracts.package_hash.updateCarrierInformation(carrier_address, carrier_phone, (error, response) => {
+        if (error) {
+            console.log(error);   
+
+            res.json({
+                status: 'error',
+                error: error,
+                did_update: false
+            });   
+
+            return;
+        }
+    
+        res.json({
+            status: 'success',
+            did_update: response
+        });  
+    });    
 };
 
 exports.finalizeDelivery = function(req, res) {

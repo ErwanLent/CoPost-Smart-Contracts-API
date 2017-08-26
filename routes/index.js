@@ -25,6 +25,7 @@ router.get('/checkBalance', (req, res) => defaultController.checkBalance(req, re
 // Official API Routes
 router.post('/api/makePackageContract', (req, res) => defaultController.makePackageContract(req, res));
 router.post('/api/payForPackage', (req, res) => defaultController.payForPackage(req, res));
+router.post('/api/updateCarrierInformation', (req, res) => defaultController.updateCarrierInformation(req, res));
 router.post('/api/finalizeDelivery', (req, res) => defaultController.finalizeDelivery(req, res));
 
 module.exports = router;

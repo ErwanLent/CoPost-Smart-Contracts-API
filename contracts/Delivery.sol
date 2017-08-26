@@ -2,6 +2,7 @@ pragma solidity ^0.4.4;
 
 contract Delivery {
 	bool package_paid_for = false;
+	bool package_delivered = false;
 
 	// Variables passed in on creation
 	string public shipper_phone;
@@ -21,12 +22,15 @@ contract Delivery {
 		amount_to_pay = _amount_to_pay;
 	}
 
-	function updateCarrierInformation() constant returns (bool) {
-		
+	function updateCarrierInformation(address _carrier_address, string _carrier_phone) constant returns (bool) {
+		carrier_address = _carrier_address;
+		carrier_phone = _carrier_phone;
+
+		return true;
 	}
 
 	function isPackageFinalized() constant returns (bool) {
-		return package_paid_for;
+		return package_delivered;
 	}
 
 	function payForPackage() payable returns (bool) {
@@ -43,7 +47,15 @@ contract Delivery {
 
 	function finalizeDelivery(string _package_hash, string _recipient_phone) constant returns (bool) {
 		if (sha3(_package_hash) == sha3(package_hash) && sha3(_recipient_phone) == sha3(recipient_phone)) {
+			package_delivered = true;
 			return true;
+
+			// if (carrier_address.send(this.balance)) {
+			// 	return true;
+			// } else {
+			// 	return false;
+			// }
+
 		} else {
 			return false;
 		}
