@@ -21,7 +21,11 @@ contract Delivery {
 		amount_to_pay = _amount_to_pay;
 	}
 
-	function getData() constant returns (bool) {
+	function updateCarrierInformation() constant returns (bool) {
+		
+	}
+
+	function isPackageFinalized() constant returns (bool) {
 		return package_paid_for;
 	}
 

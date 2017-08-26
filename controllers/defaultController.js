@@ -145,21 +145,58 @@ exports.payForPackage = function(req, res) {
 };
 
 exports.finalizeDelivery = function(req, res) {
-    //     diceRollerContract.finalizeDelivery('package hash yo', '5883765', (error, response) => {
-    //         if (error) {
-    //             console.log('Error found: ', error);    
-    //         }
+    const {
+        package_hash,
+        recipient_phone
+    } = req.body;
+
+    if (!package_hash || !recipient_phone) {
+        res.json({
+            status: 'error',
+            response: 'missing fields'
+        });   
+
+        return;               
+    }
+
+    if (!AllContracts.package_hash) {
+        res.json({
+            status: 'error',
+            response: 'No contract package hash found'
+        });   
+
+        return;  
+    }        
+
+    AllContracts.package_hash.finalizeDelivery(package_hash, recipient_phone, (error, response) => {
+        if (error) {
+            console.log(error);   
+
+            res.json({
+                status: 'error',
+                response: error
+            });   
+
+            return;
+        }
+
+        AllContracts.package_hash.isPackageFinalized((error, response) => {
+            if (error) {
+                console.log(error);   
+
+                res.json({
+                    status: 'error',
+                    response: error
+                });   
+
+                return;
+            }
         
-    //         console.log('number is: ', response + '');
-
-    //         callback({
-    //             reponse: response + ''
-    //         });
-    //     });
-
-    res.json({
-        status: 'success',
-        response: 'yolo'
+            res.json({
+                status: 'success',
+                is_finalized: response
+            });  
+        });      
     });
 };
 
@@ -182,20 +219,6 @@ exports.checkBalance = function(req, res) {
 //         res.json(response);    
 //     });
 // };
-
-// function getData(callback) {
-//     diceRollerContract.getData((error, response) => {
-//         if (error) {
-//             console.log('Error found: ', error);    
-//         }
-    
-//         console.log('number is: ', response + '');
-
-//         callback({
-//             reponse: response + ''
-//         });
-//     });
-// }
 
 // function finalizeDelivery(callback) {
 //     diceRollerContract.finalizeDelivery('package hash yo', '5883765', (error, response) => {
