@@ -16,10 +16,15 @@ router.get('/health', function(req, res) {
   });
 });
 
-// Home Page
+// Test Routes
 router.get('/', (req, res) => defaultController.index(req, res));
 router.get('/checkBalance', (req, res) => defaultController.checkBalance(req, res));
-router.get('/sendMoney', (req, res) => defaultController.sendMoney(req, res));
-router.get('/getData', (req, res) => defaultController.getData(req, res));
+// router.get('/sendMoney', (req, res) => defaultController.sendMoney(req, res));
+// router.get('/getData', (req, res) => defaultController.getData(req, res));
+
+// Official API Routes
+router.post('/api/makePackageContract', (req, res) => defaultController.makePackageContract(req, res));
+router.post('/api/payForPackage', (req, res) => defaultController.payForPackage(req, res));
+router.post('/api/finalizeDelivery', (req, res) => defaultController.finalizeDelivery(req, res));
 
 module.exports = router;
