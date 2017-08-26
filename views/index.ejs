@@ -1,0 +1,145 @@
+﻿<html>
+	<head>
+	</head>
+	<body>
+
+		<div class="nav">
+			<h2>House Balance: 76 ether</h2>
+			<input class="address" type="text" value="0x52809e5bbf871ec8816198cb59dec594aefc3973" disabled>
+
+			<br><br><br>
+			
+			<h2>Player Balance: 32 ether</h2>
+			<input class="address" type="text" value="0x4b41b8272328b89ebe7fc3c274ef45f4aba12d98" disabled>
+		</div>
+
+		<div class="contract-info">
+			Transaction: 0xc6bbf3b36d53b080eefa133e9a6d6c70d03f032e2773a926de29698a28ef656f
+			<br>
+			Contract created: 0xc46abbed60c71a8e982dbc772bcce2449c8937a5
+			<br>
+			Gas usage: 271722
+			<br>
+			Block Number: 146
+			<br>
+			Block Time: Tue Jul 25 2017 17:27:13 GMT-0700 (DST)			
+		</div>
+
+		<div class="container">
+			<h1 id="header">Gambling With Smart Contracts</h1>
+			<label for="header">You roll a 4, 5, 6 and you win. 1, 2, 3 and the house wins.</label>
+			<br>
+			<img src="https://bit.ly/dice-unknown" id="dice"/>
+			<br>
+			<subtitle id="status"></subtitle>
+			<br>
+			<div class="button">Roll That Dice</div>
+		</div>
+
+		<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+		<script src="main.js"></script>
+
+		<style>
+			body {
+				background-color: #303030;
+			    color: #fff;
+			}
+
+			#dice {
+
+			}
+
+			.nav {
+				margin: 10px;
+			}
+
+			.address {
+			    width: 320px;
+			    padding: 7px;
+			}
+
+			.contract-info {
+				position: absolute;
+			    right: 20px;
+			    top: 20px;
+			}
+
+			.spin {
+				animation: spindice 0.25s;
+				-webkit-animation: spindice 0.25s;				
+			}
+
+			.container {
+				margin-top: 50px;
+			  display: -webkit-box;
+			  display: -ms-flexbox;
+			  display: flex;
+			  -webkit-box-pack: center;
+			      -ms-flex-pack: center;
+			          justify-content: center;
+			  -webkit-box-align: center;
+			      -ms-flex-align: center;
+			          align-items: center;
+			  -webkit-box-orient: vertical;
+			  -webkit-box-direction: normal;
+			      -ms-flex-direction: column;
+			          flex-direction: column;
+			  -webkit-user-select: none;
+			     -moz-user-select: none;
+			      -ms-user-select: none;
+			          user-select: none;
+			}
+
+			h1 {
+			  font-size: 25px;
+			}
+
+			@-webkit-keyframes spindice {
+			  0% {
+			    -webkit-transform: rotate(0deg);
+			            transform: rotate(0deg);
+			  }
+			  100% {
+			    -webkit-transform: rotate(360deg);
+			            transform: rotate(360deg);
+			  }
+			}
+
+			@keyframes spindice {
+			  0% {
+			    -webkit-transform: rotate(0deg);
+			            transform: rotate(0deg);
+			  }
+			  100% {
+			    -webkit-transform: rotate(360deg);
+			            transform: rotate(360deg);
+			  }
+			}
+
+			img {
+			  width: 100px;
+			  padding: 5px;
+			  -webkit-animation: none;
+			          animation: none;
+			}
+
+			.button {
+			  font-size: 22px;
+			  color: #fff;
+			  background-color: #d72e2e;
+			  height: auto;
+			  border: none;
+			  padding: 5px 10px;
+			  border-radius: 10px;
+			  cursor: pointer;
+			  -webkit-transition: all 0.5s;
+			  transition: all 0.5s;
+			}
+			
+			.button:hover {
+			  background-color: #fff;
+			  color: #303030;
+			}
+		</style>
+	</body>
+</html>
