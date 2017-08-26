@@ -5,36 +5,39 @@ const Web3 = require('web3');
 
 const web3 = new Web3(new Web3.providers.HttpProvider("http://localhost:8545"));
 
-const HOUSE_ADDRESS = '0x52809e5bbf871ec8816198cb59dec594aefc3973';
-const PLAYER_ADDRESS = '0x4b41b8272328b89ebe7fc3c274ef45f4aba12d98';
-
-//checkAllBalances();
+const SHIPPER_ADDRESS = '0x9657ef5935f46df4b1d84e51664ca138332b1813';
+const CARRIER_ADDRESS = '0x6f55b6664199502f6057f2ca3c98e2ba253b47d8';
 
 // Compile the source code
-const input = fs.readFileSync('./contracts/DiceRoller.sol', 'utf8');
+const input = fs.readFileSync('./contracts/Delivery.sol', 'utf8');
 const output = solc.compile(input, 1);
 
-const abi = JSON.parse(output.contracts[':DiceRoller'].interface);
-const bytecode = output.contracts[':DiceRoller'].bytecode;
+// Error loggins
+if (!output.contracts[':Delivery']) {
+    console.log(output);
+}
 
-let gasEstimate = 250000;
-web3.eth.estimateGas({data: bytecode}, (err, resp) => {
-    if (err) {
-        console.log(err);
-    }
+const abi = JSON.parse(output.contracts[':Delivery'].interface);
+const bytecode = output.contracts[':Delivery'].bytecode;
 
-    gasEstimate = resp;
+// let gasEstimate = 6000000;
+// web3.eth.estimateGas({data: bytecode}, (err, resp) => {
+//     if (err) {
+//         console.log(err);
+//     }
 
-    console.log(`Gas estimate set to: ${gasEstimate}`);
-});
+//     gasEstimate = resp;
+
+//     console.log(`Gas estimate set to: ${gasEstimate}`);
+// });
 
 const contract = web3.eth.contract(abi);
 let diceRollerContract;
 
-const contractInstance = contract.new(PLAYER_ADDRESS, {
+const contractInstance = contract.new('5884495', '5883766', 'package hash yo', web3.toWei(3, 'ether'), {
     data: '0x' + bytecode,
-    from: HOUSE_ADDRESS,
-    gas: 180000 * 2
+    from: SHIPPER_ADDRESS,
+    gas: 800000
 }, (err, res) => {
     if (err) {
         console.log(err);   
@@ -48,57 +51,70 @@ const contractInstance = contract.new(PLAYER_ADDRESS, {
     }
 });    
 
-exports.index = function(req, res) {
-    checkAllBalances();
+//checkAllBalances();
 
+exports.index = function(req, res) {
+    //checkAllBalances();
     res.render(path.resolve('views/index.ejs'));
 };
 
-exports.getNewNumber = function(req, res) {
-    makeBet((response) => {
+exports.sendMoney = function(req, res) {
+    sendMoney((response) => {
         res.json(response);    
     });
 };
 
-function makeBet(callback) {
-    diceRollerContract.makeBet(getRandomInt(1, 10000000), (error, response) => {
+exports.getData = function(req, res) {
+    getData((response) => {
+        res.json(response);    
+    });
+};
+
+exports.checkBalance = function(req, res) {
+    checkAllBalances();
+
+    res.json({
+        reponse: 'Checking balances'
+    });  
+};
+
+function getData(callback) {
+    diceRollerContract.getData((error, response) => {
         if (error) {
             console.log('Error found: ', error);    
         }
     
-        console.log('Random numnber is: ', response + '');
+        console.log('number is: ', response + '');
 
         callback({
-            number: response + ''
+            reponse: response + ''
         });
     });
 }
 
-function getHouseBalance(callback) {
-    diceRollerContract.getHouseBalanceInWei((error, response) => {
+function finalizeDelivery(callback) {
+    diceRollerContract.finalizeDelivery('package hash yo', '5883765', (error, response) => {
         if (error) {
             console.log('Error found: ', error);    
         }
-        
-        const etherBalance = web3.fromWei(response + '', 'ether');
+    
+        console.log('number is: ', response + '');
 
-        console.log('House balance is: ', etherBalance);
-
-        callback(etherBalance);
+        callback({
+            reponse: response + ''
+        });
     });
 }
 
-function getPlayerBalance(callback) {
-    diceRollerContract.getPlayerBalanceInWei((error, response) => {
-        if (error) {
-            console.log('Error found: ', error);    
-        }
-        
-        const etherBalance = web3.fromWei(response + '', 'ether');
-
-        console.log('House balance is: ', etherBalance);
-
-        callback(etherBalance);
+function sendMoney(callback) {
+    diceRollerContract.payForPackage.sendTransaction({
+        from: SHIPPER_ADDRESS,
+        value: web3.toWei(5, 'ether'),
+        gas: 600000,
+    }, function(err, data) {
+        callback({
+            reponse: (err || data) + ''
+        });
     });
 }
 

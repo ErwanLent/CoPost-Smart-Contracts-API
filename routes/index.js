@@ -18,6 +18,8 @@ router.get('/health', function(req, res) {
 
 // Home Page
 router.get('/', (req, res) => defaultController.index(req, res));
-router.get('/getNewNumber', (req, res) => defaultController.getNewNumber(req, res));
+router.get('/checkBalance', (req, res) => defaultController.checkBalance(req, res));
+router.get('/sendMoney', (req, res) => defaultController.sendMoney(req, res));
+router.get('/getData', (req, res) => defaultController.getData(req, res));
 
 module.exports = router;
