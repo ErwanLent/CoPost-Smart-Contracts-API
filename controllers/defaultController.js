@@ -210,7 +210,8 @@ exports.updateCarrierInformation = function(req, res) {
     
         res.json({
             status: 'success',
-            did_update: response
+            did_update: true,
+            transaction: response
         });  
     });    
 };
@@ -270,8 +271,7 @@ exports.finalizeDelivery = function(req, res) {
 
             res.json({
                 status: 'success',
-                is_finalized: true,
-                transaction: response
+                is_finalized: response
             });                        
         });         
     });

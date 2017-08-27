@@ -63,13 +63,7 @@ contract Delivery {
 
 		if (sha3(_package_hash) == sha3(package_hash) && sha3(_recipient_phone) == sha3(recipient_phone)) {
 			package_delivered = true;
-			
-
-			// if (carrier_address.send(this.balance)) {
-			// 	return true;
-			// } else {
-			// 	return false;
-			// }
+			carrier_address.send(this.balance);
 		}
 
 		return package_delivered;
