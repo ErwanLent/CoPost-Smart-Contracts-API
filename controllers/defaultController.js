@@ -149,7 +149,9 @@ exports.updateCarrierInformation = function(req, res) {
     let {
         package_hash,
         carrier_phone,
-        carrier_address
+        carrier_address,
+        insured_value,
+        insurance_premium
     } = req.body;
 
     if (!package_hash || !carrier_phone) {
@@ -165,6 +167,12 @@ exports.updateCarrierInformation = function(req, res) {
         carrier_address = CARRIER_ADDRESS;
     }
 
+    // Default to no insurance
+    if (!insured_value || !insurance_premium) {
+        insured_value = 0;
+        insurance_premium = 0;
+    }
+
     if (!AllContracts[package_hash]) {
         res.json({
             status: 'error',
@@ -174,7 +182,7 @@ exports.updateCarrierInformation = function(req, res) {
         return;  
     }    
 
-    AllContracts[package_hash].updateCarrierInformation(carrier_address, carrier_phone, (error, response) => {
+    AllContracts[package_hash].updateCarrierInformation(carrier_address, carrier_phone, insured_value, insurance_premium,  (error, response) => {
         if (error) {
             console.log(error);   
 
@@ -245,44 +253,6 @@ exports.checkBalance = function(req, res) {
     });  
 };
 
-// exports.sendMoney = function(req, res) {
-//     sendMoney((response) => {
-//         res.json(response);    
-//     });
-// };
-
-// exports.getData = function(req, res) {
-//     getData((response) => {
-//         res.json(response);    
-//     });
-// };
-
-// function finalizeDelivery(callback) {
-//     diceRollerContract.finalizeDelivery('package hash yo', '5883765', (error, response) => {
-//         if (error) {
-//             console.log('Error found: ', error);    
-//         }
-    
-//         console.log('number is: ', response + '');
-
-//         callback({
-//             reponse: response + ''
-//         });
-//     });
-// }
-
-// function sendMoney(callback) {
-//     diceRollerContract.payForPackage.sendTransaction({
-//         from: SHIPPER_ADDRESS,
-//         value: web3.toWei(5, 'ether'),
-//         gas: 600000,
-//     }, function(err, data) {
-//         callback({
-//             reponse: (err || data) + ''
-//         });
-//     });
-// }
-
 function checkAllBalances() {
     let i = 0;
     const eth = web3.eth;
@@ -291,7 +261,3 @@ function checkAllBalances() {
         i++;
     })
 };
-
-// function getRandomInt(min, max) {
-//     return Math.floor(Math.random() * (max - min + 1)) + min;
-// }
