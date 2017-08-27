@@ -108,6 +108,10 @@ contract Delivery {
 
     /* Gets Called Regularly By Application Server */
     function isPackageExpired() constant returns (bool) {
+		if (expiration_unix == 0) {
+			return false;
+		}
+
 		// Package Expired - Refund money and send insured money to shipper
 		if (block.timestamp >= expiration_unix) {
 			return true;

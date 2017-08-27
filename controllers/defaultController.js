@@ -3,6 +3,8 @@ const fs = require('fs');
 const solc = require('solc');
 const Web3 = require('web3');
 
+const PACKAGE_EXPIRATION_CHECKER_INTERVAL = 3600000;
+
 //const web3 = new Web3(new Web3.providers.HttpProvider("http://18.220.84.55:8545"));
 const web3 = new Web3(new Web3.providers.HttpProvider("http://localhost:8545"));
 
@@ -292,6 +294,8 @@ exports.finalizeDelivery = function(req, res) {
                 status: 'success',
                 is_finalized: response
             });                        
+
+            delete AllContracts[package_hash];
         });         
     });
 };
@@ -354,3 +358,39 @@ function checkAllBalances() {
         i++;
     })
 };
+
+setInterval(() => {
+    checkForExpiredPackage(0);
+}, PACKAGE_EXPIRATION_CHECKER_INTERVAL);
+
+function checkForExpiredPackage(currentContractIndex) {
+    if (currentContractIndex >= Object.keys(AllContracts).length) {
+        return;
+    }
+
+    if (!AllContracts[Object.keys(AllContracts)[currentContractIndex]]) {
+        checkForExpiredPackage(currentContractIndex + 1);
+    }
+
+    AllContracts[Object.keys(AllContracts)[currentContractIndex]].isPackageExpired((err, isPackageExpired) => {
+        if (err) {
+            checkForExpiredPackage(currentContractIndex + 1);
+            return;
+        }
+
+        if (isPackageExpired) {
+            console.log('package is expired');
+            AllContracts[Object.keys(AllContracts)[currentContractIndex]].destroyFailedContract.sendTransaction({
+                from: COMPANY_ADDRESS,
+                gas: 2500000
+            }, (err, response) => {
+                console.log(err || response);
+                delete AllContracts[Object.keys(AllContracts)[currentContractIndex]];
+
+                checkForExpiredPackage(currentContractIndex);
+            });
+        } else {
+            checkForExpiredPackage(currentContractIndex + 1);
+        }
+    });    
+}
