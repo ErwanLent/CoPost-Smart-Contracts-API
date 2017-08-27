@@ -12,7 +12,7 @@ Required params:
 - package_hash
 - shipper_phone
 - recipient_phone
-- amount_to_pay_in_wei
+- amount_to_pay_in_ether
 
 
 ----------
@@ -24,7 +24,7 @@ Required params:
 Required params:
 
 - package_hash
-- amount_to_pay_in_wei
+- amount_to_pay_in_ether
 
 ----------
 
