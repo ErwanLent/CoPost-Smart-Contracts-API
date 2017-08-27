@@ -1,19 +1,38 @@
 pragma solidity ^0.4.4;
 
 contract Delivery {
+
+/* ==========================================================================
+   Contract State Variables
+   ========================================================================== */	
 	bool public package_paid_for = false;
 	bool public package_delivered = false;
 
-	// Variables passed in on creation
-	string public shipper_phone;
-	string public recipient_phone;
-	string public package_hash;
-	uint amount_to_pay;
+/* ==========================================================================
+   Variables passed in on creation
+   ========================================================================== */	
+	string private shipper_phone;
+	string private recipient_phone;
+	string private package_hash;
 
-	// Passed in later
-	string public carrier_phone;
-	address public carrier_address;
-	address public shipper_address;
+	uint private amount_to_pay;
+
+/* ==========================================================================
+   Lazy Variables
+   ========================================================================== */
+	uint public expiration_unix;
+
+	uint private insured_value;
+	uint private insurance_premium;
+
+	string private carrier_phone;
+
+	address private carrier_address;
+	address private shipper_address;
+	
+/* ==========================================================================
+   Public Functions
+   ========================================================================== */
 
 	function Delivery(string _shipper_phone, string _recipient_phone, string _package_hash, uint _amount_to_pay) {
 		shipper_phone = _shipper_phone;
@@ -22,9 +41,13 @@ contract Delivery {
 		amount_to_pay = _amount_to_pay;
 	}
 
-	function updateCarrierInformation(address _carrier_address, string _carrier_phone, uint _insured_value, uint _insurance_premium) constant returns (bool) {
+	function updateCarrierInformation(address _carrier_address, string _carrier_phone, 
+		uint _expiration_unix, uint _insured_value, uint _insurance_premium) constant returns (bool) {
 		carrier_address = _carrier_address;
 		carrier_phone = _carrier_phone;
+		expiration_unix = _expiration_unix;
+		insured_value = _insured_value;
+		insurance_premium = _insurance_premium;
 
 		return true;
 	}

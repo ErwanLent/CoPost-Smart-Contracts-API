@@ -151,7 +151,8 @@ exports.updateCarrierInformation = function(req, res) {
         carrier_phone,
         carrier_address,
         insured_value,
-        insurance_premium
+        insurance_premium,
+        expiration_unix
     } = req.body;
 
     if (!package_hash || !carrier_phone) {
@@ -173,6 +174,11 @@ exports.updateCarrierInformation = function(req, res) {
         insurance_premium = 0;
     }
 
+    // Default to 1 month from now
+    if (!expiration_unix) {
+        expiration_unix = 0;
+    }
+
     if (!AllContracts[package_hash]) {
         res.json({
             status: 'error',
@@ -182,7 +188,7 @@ exports.updateCarrierInformation = function(req, res) {
         return;  
     }    
 
-    AllContracts[package_hash].updateCarrierInformation(carrier_address, carrier_phone, insured_value, insurance_premium,  (error, response) => {
+    AllContracts[package_hash].updateCarrierInformation(carrier_address, carrier_phone, expiration_unix, insured_value, insurance_premium,  (error, response) => {
         if (error) {
             console.log(error);   
 

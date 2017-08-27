@@ -6,7 +6,7 @@ var defaultController = require('../controllers/defaultController');
 
 
 /* ==========================================================================
-   Front-End Website
+   Routes
    ========================================================================== */
 
 // Health
