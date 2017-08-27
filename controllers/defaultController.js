@@ -176,7 +176,11 @@ exports.updateCarrierInformation = function(req, res) {
 
     // Default to 1 month from now
     if (!expiration_unix) {
-        expiration_unix = 0;
+        const monthFromNowDate = new Date();
+        monthFromNowDate.setMonth(monthFromNowDate.getMonth() + 1);
+        const monthFromNowUnix = monthFromNowDate.getTime() / 1000;
+
+        expiration_unix = monthFromNowUnix;
     }
 
     if (!AllContracts[package_hash]) {
