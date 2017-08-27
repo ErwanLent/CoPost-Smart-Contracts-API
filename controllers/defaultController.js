@@ -70,7 +70,7 @@ exports.makePackageContract = function(req, res) {
     const contractInstance = contract.new(shipper_phone, recipient_phone, package_hash, web3.toWei(amount_to_pay_in_ether, 'ether'), {
         data: '0x' + bytecode,
         from: COMPANY_ADDRESS,
-        gas: 1500000
+        gas: 2500000
     }, (err, contractResponse) => {
         if (err) {
             console.log(err);   
@@ -192,7 +192,10 @@ exports.updateCarrierInformation = function(req, res) {
         return;  
     }    
 
-    AllContracts[package_hash].updateCarrierInformation(carrier_address, carrier_phone, expiration_unix, insured_value, insurance_premium,  (error, response) => {
+    AllContracts[package_hash].updateCarrierInformation.sendTransaction(carrier_address, carrier_phone, expiration_unix, insured_value, insurance_premium, {
+        from: COMPANY_ADDRESS,
+        gas: 2500000
+    },  (error, response) => {
         if (error) {
             console.log(error);   
 
@@ -236,7 +239,76 @@ exports.finalizeDelivery = function(req, res) {
         return;  
     }        
 
-    AllContracts[package_hash].finalizeDelivery(package_hash, recipient_phone, (err, finalizeResponse) => {
+    AllContracts[package_hash].finalizeDelivery.sendTransaction(package_hash, recipient_phone, {
+        from: COMPANY_ADDRESS,
+        gas: 2500000
+    }, (err, finalizeResponse) => {
+        if (err) {
+            console.log(err);   
+
+            res.json({
+                status: 'error',
+                response: err,
+                is_finalized: false
+            });   
+
+            return;
+        }
+
+        AllContracts[package_hash].isPackageFinalized((error, response) => {
+            if (error) {
+                console.log(error);   
+
+                res.json({
+                    status: 'error',
+                    response: error,
+                    is_finalized: false
+                });   
+
+                return;
+            }  
+
+            res.json({
+                status: 'success',
+                is_finalized: true,
+                transaction: response
+            });                        
+        });         
+    });
+};
+
+exports.checkBalance = function(req, res) {
+    checkAllBalances();
+
+    res.json({
+        reponse: 'Checking balances'
+    });  
+};
+
+exports.checkDeliveryStatus = function(req, res) {
+    const {
+        package_hash
+    } = req.body;
+
+    if (!package_hash) {
+        res.json({
+            status: 'error',
+            response: 'missing fields'
+        });   
+
+        return;               
+    }    
+
+    if (!AllContracts[package_hash]) {
+        res.json({
+            status: 'error',
+            response: 'No contract package hash found'
+        });   
+
+        return;  
+    }      
+
+    AllContracts[package_hash].isPackageFinalized(package_hash, (err, finalizeResponse) => {
         if (err) {
             console.log(err);   
 
@@ -253,14 +325,6 @@ exports.finalizeDelivery = function(req, res) {
             is_finalized: finalizeResponse
         });    
     });
-};
-
-exports.checkBalance = function(req, res) {
-    checkAllBalances();
-
-    res.json({
-        reponse: 'Checking balances'
-    });  
 };
 
 function checkAllBalances() {

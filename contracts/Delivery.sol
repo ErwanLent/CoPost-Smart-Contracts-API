@@ -56,23 +56,6 @@ contract Delivery {
 		return package_delivered;
 	}
 
-	function payForPackage() payable returns (bool) {
-		if (package_paid_for) {
-			msg.sender.send(msg.value);
-			return true;
-		}
-
-		shipper_address = msg.sender;
-
-        if (msg.value == amount_to_pay) {
-        	package_paid_for = true;
-        	return true;
-        } else {
-        	msg.sender.send(msg.value);
-        	return false;
-        }        
-    }
-
 	function finalizeDelivery(string _package_hash, string _recipient_phone) constant returns (bool) {
 		if (package_delivered) {
 			return true;
@@ -90,5 +73,22 @@ contract Delivery {
 		}
 
 		return package_delivered;
-	}
+	}	
+
+	function payForPackage() payable returns (bool) {
+		if (package_paid_for) {
+			msg.sender.send(msg.value);
+			return true;
+		}
+
+		shipper_address = msg.sender;
+
+        if (msg.value == amount_to_pay) {
+        	package_paid_for = true;
+        	return true;
+        } else {
+        	msg.sender.send(msg.value);
+        	return false;
+        }        
+    }
 }

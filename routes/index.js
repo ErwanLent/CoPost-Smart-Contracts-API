@@ -27,5 +27,6 @@ router.post('/api/makePackageContract', (req, res) => defaultController.makePack
 router.post('/api/payForPackage', (req, res) => defaultController.payForPackage(req, res));
 router.post('/api/updateCarrierInformation', (req, res) => defaultController.updateCarrierInformation(req, res));
 router.post('/api/finalizeDelivery', (req, res) => defaultController.finalizeDelivery(req, res));
+router.post('/api/checkDeliveryStatus', (req, res) => defaultController.checkDeliveryStatus(req, res));
 
 module.exports = router;
