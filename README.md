@@ -39,6 +39,8 @@ Required params:
 Optional params:
 
 - carrier_address
+- insured_value
+- insurance_premium
 
 The *carrier_address* is a ethereum address.
 
