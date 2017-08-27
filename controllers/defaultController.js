@@ -36,6 +36,7 @@ const bytecode = output.contracts[':Delivery'].bytecode;
 const contract = web3.eth.contract(abi);
 
 const AllContracts = {};  
+const ContractData = {};
 
 exports.index = function(req, res) {
     res.render(path.resolve('views/index.ejs'));
@@ -67,7 +68,7 @@ exports.makePackageContract = function(req, res) {
         return;  
     }
 
-    const contractInstance = contract.new(shipper_phone, recipient_phone, package_hash, web3.toWei(amount_to_pay_in_ether, 'ether'), {
+    const contractInstance = contract.new(COMPANY_ADDRESS, shipper_phone, recipient_phone, package_hash, web3.toWei(amount_to_pay_in_ether, 'ether'), {
         data: '0x' + bytecode,
         from: COMPANY_ADDRESS,
         gas: 2500000
@@ -138,6 +139,20 @@ exports.payForPackage = function(req, res) {
             return;
         }
 
+        // Insurance Logic
+        if (ContractData[package_hash] && ContractData[package_hash].insured_value > 0) {
+            AllContracts[package_hash].isPackagePaidFor((err, isPackagePaidFor) => {
+                if (isPackagePaidFor) {
+                    // Package and premium paid for, pay insured value
+                    AllContracts[package_hash].payForInsuredValue.sendTransaction({
+                        from: COMPANY_ADDRESS,
+                        value: web3.toWei(ContractData[package_hash].insured_value, 'ether'),
+                        gas: 600000,
+                    }, (err, data) => { });
+                }
+            });
+        }
+
         res.json({
             status: 'success',
             transaction: data
@@ -174,6 +189,9 @@ exports.updateCarrierInformation = function(req, res) {
         insurance_premium = 0;
     }
 
+    ContractData[package_hash] = {};
+    ContractData[package_hash].insured_value = insured_value;
+
     // Default to 1 month from now
     if (!expiration_unix) {
         const monthFromNowDate = new Date();
@@ -192,7 +210,8 @@ exports.updateCarrierInformation = function(req, res) {
         return;  
     }    
 
-    AllContracts[package_hash].updateCarrierInformation.sendTransaction(carrier_address, carrier_phone, expiration_unix, insured_value, insurance_premium, {
+    AllContracts[package_hash].updateCarrierInformation.sendTransaction(carrier_address, carrier_phone, 
+        expiration_unix, web3.toWei(insured_value, 'ether'), web3.toWei(insurance_premium, 'ether'), {
         from: COMPANY_ADDRESS,
         gas: 2500000
     },  (error, response) => {

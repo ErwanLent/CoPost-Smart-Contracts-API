@@ -29,12 +29,14 @@ contract Delivery {
 
 	address private carrier_address;
 	address private shipper_address;
+	address private insurance_address;
 	
 /* ==========================================================================
    Public Functions
    ========================================================================== */
 
-	function Delivery(string _shipper_phone, string _recipient_phone, string _package_hash, uint _amount_to_pay) {
+	function Delivery(address _insurance_address, string _shipper_phone, string _recipient_phone, string _package_hash, uint _amount_to_pay) {
+		insurance_address = _insurance_address;
 		shipper_phone = _shipper_phone;
 		recipient_phone = _recipient_phone;
 		package_hash = _package_hash;
@@ -52,6 +54,10 @@ contract Delivery {
 		return true;
 	}
 
+	function isPackagePaidFor() constant returns (bool) {
+		return package_paid_for;
+	}
+
 	function isPackageFinalized() constant returns (bool) {
 		return package_delivered;
 	}
@@ -67,7 +73,7 @@ contract Delivery {
 
 		if (sha3(_package_hash) == sha3(package_hash) && sha3(_recipient_phone) == sha3(recipient_phone)) {
 			package_delivered = true;
-			carrier_address.send(this.balance);
+			carrier_address.send(amount_to_pay);
 		}
 
 		return package_delivered;
@@ -88,5 +94,30 @@ contract Delivery {
         	msg.sender.send(msg.value);
         	return false;
         }        
+    }
+
+	function payForInsuredValue() payable returns (bool) {
+		if (msg.value != insured_value) {
+			msg.sender.send(msg.value);
+			return false;
+		}    
+
+		// Cash out premium to insurance address
+		insurance_address.send(insurance_premium); 
+    }    
+
+    /* Gets Called Regularly By Application Server */
+    function isPackageExpired() constant returns (bool) {
+		// Package Expired - Refund money and send insured money to shipper
+		if (block.timestamp >= expiration_unix) {
+			return true;
+		}
+
+		return false;
+    }
+
+    function destroyFailedContract() {
+    	shipper_address.send(amount_to_pay + insured_value);
+    	selfdestruct(insurance_address);
     }
 }
