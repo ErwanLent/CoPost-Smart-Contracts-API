@@ -57,6 +57,10 @@ contract Delivery {
 	}
 
 	function finalizeDelivery(string _package_hash, string _recipient_phone) constant returns (bool) {
+		if (!package_paid_for) {
+			return false;
+		}
+
 		if (package_delivered) {
 			return true;
 		}
@@ -77,7 +81,7 @@ contract Delivery {
 
 		shipper_address = msg.sender;
 
-        if (msg.value == amount_to_pay) {
+        if (msg.value == (amount_to_pay + insurance_premium)) {
         	package_paid_for = true;
         	return true;
         } else {
