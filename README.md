@@ -41,8 +41,9 @@ Optional params:
 - carrier_address
 - insured_value
 - insurance_premium
+- expiration_unix
 
-The *carrier_address* is a ethereum address.
+The *carrier_address* is a ethereum address. expiration_unix defaults to 1 month.
 
 ----------
 
