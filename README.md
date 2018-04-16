@@ -2,6 +2,8 @@
 
 Made at BCG DV blockchain dAppathon
 
+[Delivery Contract](https://github.com/ErwanLent/CoPost-Smart-Contracts-API/blob/master/contracts/Delivery.sol)
+
 # Endpoints #
 
 **POST**
