@@ -1,6 +1,6 @@
-# HandOff-Contract-API
+# CoPost-Smart-Contracts-API
 
-API URL: [http://18.220.84.55:3000/](http://18.220.84.55:3000/)
+Made at BCG DV blockchain dAppathon
 
 # Endpoints #
 
